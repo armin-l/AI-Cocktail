@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI Cocktail Geschmacksanalysator</title>
+    <!-- Tailwind CSS CDN für Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Benutzerdefiniertes Skript zur Definition der Schriftart Inter -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Stellt sicher, dass der Body die volle Viewport-Höhe für die Zentrierung des Inhalts einnimmt */
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f3f4f6; /* Heller grauer Hintergrund */
+            margin: 0;
+            padding: 20px; /* Fügt etwas Polsterung für kleinere Bildschirme hinzu */
+            box-sizing: border-box; /* Polsterung in die Gesamtbreite und -höhe des Elements einbeziehen */
+        }
+
+        /* Grundlegendes Container-Styling für Responsivität */
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        /* Styling für die Farbmuster */
+        .color-swatch {
+            width: 6rem; /* Entspricht Tailwind w-24 */
+            height: 6rem; /* Entspricht Tailwind h-24 */
+        }
+
+        /* Elemente, die erst nach der Analyse angezeigt werden, standardmäßig ausblenden */
+        #loadingMessage, #resultsContainer {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container bg-white p-8 rounded-lg shadow-xl text-center flex flex-col items-center">
+        <h1 class="text-3xl md:text-4xl font-bold mb-6 text-gray-900">KI Cocktail Geschmacksanalysator</h1>
+        <p class="text-lg md:text-xl mb-8 text-gray-600">
+            Klicke auf den Button unten, damit unsere fortschrittliche KI dein Gesicht "analysiert" und ein Cocktail-Geschmacksprofil sowie eine passende Verbesserungsfarbe vorschlägt!
+        </p>
+
+        <button id="analyzeButton"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+            "Foto machen" & Gesicht analysieren
+        </button>
+
+        <!-- Lade-Nachricht -->
+        <div id="loadingMessage" class="mt-8 text-xl font-medium text-blue-700">
+            Analysiere... Bitte warten Sie, während unsere KI Ihre einzigartigen Gesichtsdaten verarbeitet...
+        </div>
+
+        <!-- Ergebnisse Container -->
+        <div id="resultsContainer" class="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg w-full">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4">Analyse abgeschlossen!</h2>
+
+            <p class="text-lg mb-4">
+                <span class="font-semibold text-blue-700">Gesichtsdaten-Interpretation:</span>
+                <span id="faceAnalysisText"></span>
+            </p>
+
+            <p class="text-lg mb-6">
+                <span class="font-semibold text-blue-700">Vorgeschlagenes Geschmacksprofil:</span>
+                <span id="flavorProfileText"></span>
+            </p>
+
+            <div class="flex flex-col items-center mt-6">
+                <p class="text-lg font-semibold text-blue-700 mb-2">Empfohlene Cocktail-Verbesserungsfarbe:</p>
+                <div id="colorSwatch" class="color-swatch rounded-full border-4 border-gray-300 shadow-lg mb-3"></div>
+                <p id="colorName" class="text-xl font-bold text-gray-800"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referenzen zu DOM-Elementen abrufen
+            const analyzeButton = document.getElementById('analyzeButton');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const faceAnalysisText = document.getElementById('faceAnalysisText');
+            const flavorProfileText = document.getElementById('flavorProfileText');
+            const colorSwatch = document.getElementById('colorSwatch');
+            const colorName = document.getElementById('colorName');
+
+            // Vordefinierte Daten für die Fake-Analyse
+            const faceAnalyses = [
+                "Unsere KI erkannte komplexe Konturen und lebendige Farbtöne, die auf eine dynamische Persönlichkeit hindeuten.",
+                "Feine Ausdrücke und harmonische Proportionen wurden identifiziert, was auf einen anspruchsvollen Gaumen schließen lässt.",
+                "Markante Merkmale und eine einzigartige Symmetrie weisen auf einen mutigen und abenteuerlustigen Geist hin.",
+                "Ein sanftes Leuchten und eine raffinierte Struktur wurden bemerkt, was auf einen zarten, aber reichen Charakter hindeutet.",
+                "Faszinierende Schatten und helle Lichter deuten auf eine spielerische und energische Aura hin."
+            ];
+
+            const flavorProfiles = [
+                "Süß und zitrusartig, mit einem Hauch von tropischen Noten.",
+                "Kräftig und würzig, mit erdigen Untertönen und einer anhaltenden Wärme.",
+                "Erdig und aromatisch, erinnernd an tiefe Wälder und alte Gewürze.",
+                "Leicht und erfrischend, mit knackigen Fruchtaromen und floralen Akzenten.",
+                "Reichhaltig und dekadent, mit Noten von dunklen Beeren und sanfter Vanille."
+            ];
+
+            // Aktualisierte Cocktailfarben, die nur Rot, Grün, Blau, Gelb und Violett enthalten
+            const cocktailColors = [
+                { name: "Strahlendes Rot", hex: "#FF0000" },
+                { name: "Lebhaftes Grün", hex: "#00FF00" },
+                { name: "Tiefes Blau", hex: "#0000FF" },
+                { name: "Sonniges Gelb", hex: "#FFFF00" },
+                { name: "Mystisches Violett", hex: "#8A2BE2" }
+            ];
+
+            // Funktion zum Abrufen eines zufälligen Elements aus einem Array
+            function getRandomItem(arr) {
+                return arr[Math.floor(Math.random() * arr.length)];
+            }
+
+            // Event-Listener für den Analyse-Button
+            analyzeButton.addEventListener('click', () => {
+                // Button deaktivieren, um Mehrfachklicks zu verhindern
+                analyzeButton.disabled = true;
+                analyzeButton.classList.add('opacity-50', 'cursor-not-allowed');
+
+                // Lade-Nachricht anzeigen und vorherige Ergebnisse ausblenden
+                loadingMessage.style.display = 'block';
+                resultsContainer.style.display = 'none';
+
+                // KI-Analyse-Verzögerung simulieren
+                setTimeout(() => {
+                    // Lade-Nachricht ausblenden
+                    loadingMessage.style.display = 'none';
+
+                    // Zufällige Analyseergebnisse abrufen
+                    const randomFaceAnalysis = getRandomItem(faceAnalyses);
+                    const randomFlavorProfile = getRandomItem(flavorProfiles);
+                    const randomColor = getRandomItem(cocktailColors);
+
+                    // DOM mit den Ergebnissen aktualisieren
+                    faceAnalysisText.textContent = randomFaceAnalysis;
+                    flavorProfileText.textContent = randomFlavorProfile;
+                    colorSwatch.style.backgroundColor = randomColor.hex;
+                    colorName.textContent = randomColor.name;
+
+                    // Ergebnisse-Container anzeigen
+                    resultsContainer.style.display = 'block';
+
+                    // Button wieder aktivieren
+                    analyzeButton.disabled = false;
+                    analyzeButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                }, 3000); // 3 Sekunden Analysezeit simulieren
+            });
+        });
+    </script>
+</body>
+</html>
