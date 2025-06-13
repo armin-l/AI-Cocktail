@@ -142,19 +142,29 @@
 
             // Vordefinierte Daten für die Fake-Analyse
 const faceAnalyses = [
-    ["dynamisch", "lebendig", "kreativ", "offen"],
-    ["harmonisch", "anspruchsvoll", "ausgeglichen"],
-    ["mutig", "abenteuerlustig", "einzigartig", "symmetrisch"],
-    ["zart", "raffiniert", "reich", "sanft"],
-    ["spielerisch", "energiegeladen", "faszinierend", "hell"]
+    ["offen", "freundlich", "neugierig", "anpassungsfähig"],
+    ["ruhig", "ausgeglichen", "harmonisch", "sympathisch"],
+    ["lebendig", "energiegeladen", "optimistisch", "kreativ"],
+    ["nachdenklich", "tiefgründig", "sensibel", "aufmerksam"],
+    ["abenteuerlustig", "mutig", "spontan", "flexibel"],
+    ["hilfsbereit", "zuverlässig", "loyal", "ehrlich"],
+    ["humorvoll", "locker", "herzlich", "warm"],
+    ["zielstrebig", "fokussiert", "engagiert", "ambitioniert"],
+    ["gelassen", "geduldig", "resilient", "ausdauernd"],
+    ["inspirierend", "visionär", "originell", "authentisch"]
 ];
 
 const flavorProfiles = [
-    ["süß", "zitrus", "tropisch"],
-    ["kräftig", "würzig", "erdig", "warm"],
-    ["erdig", "aromatisch", "waldig", "gewürze"],
-    ["leicht", "erfrischend", "fruchtig", "floral"],
-    ["reichhaltig", "dekadent", "beeren", "vanille"]
+    ["fruchtig", "erfrischend", "leicht", "belebend"],
+    ["süß", "sanft", "weich", "rund"],
+    ["herb", "würzig", "interessant", "vielschichtig"],
+    ["cremig", "vollmundig", "reichhaltig", "angenehm"],
+    ["zitrus", "spritzig", "lebendig", "klar"],
+    ["blumig", "aromatisch", "duftig", "zart"],
+    ["exotisch", "tropisch", "sonnig", "einladend"],
+    ["klassisch", "zeitlos", "balanciert", "harmonisch"],
+    ["intensiv", "kraftvoll", "charaktervoll", "prägnant"],
+    ["mild", "dezent", "subtil", "fein"]
 ];
 
             // Aktualisierte Cocktailfarben, die nur Rot, Grün, Blau, Gelb und Violett enthalten
@@ -318,14 +328,30 @@ analyzeButton.addEventListener('click', () => {
                 loadingMessage.style.display = 'block';
                 resultsContainer.style.display = 'none';
 
-                // Erklärungen für die Analysephase
-                const explanations = [
+                // Erklärungen für die Analysephase (10 Möglichkeiten, 5 zufällig pro Analyse)
+                const allExplanations = [
                     "Erkenne Gesichtsform und Konturen...",
                     "Analysiere Hauttöne und Farbnuancen...",
                     "Untersuche Mimik und Ausdrucksstärke...",
                     "Bewerte Symmetrie und Proportionen...",
-                    "Interpretiere individuelle Merkmale und Besonderheiten..."
+                    "Interpretiere individuelle Merkmale und Besonderheiten...",
+                    "Vergleiche Farbprofile mit Cocktaildatenbank...",
+                    "Ermittle passende Cocktailfarben anhand deines Typs...",
+                    "Analysiere Lichtverhältnisse und Bildqualität...",
+                    "Berücksichtige aktuelle Stimmung und Tageszeit...",
+                    "Optimiere Empfehlungen mit AI-Algorithmen..."
                 ];
+                // Funktion, um n zufällige, eindeutige Elemente aus einem Array zu wählen
+                function getRandomUniqueItems(arr, n) {
+                    const copy = [...arr];
+                    const result = [];
+                    for (let i = 0; i < n && copy.length > 0; i++) {
+                        const idx = Math.floor(Math.random() * copy.length);
+                        result.push(copy.splice(idx, 1)[0]);
+                    }
+                    return result;
+                }
+                const explanations = getRandomUniqueItems(allExplanations, 5);
                 const loadingExplanations = document.getElementById('loadingExplanations');
                 let explanationIndex = 0;
                 loadingExplanations.textContent = explanations[0];
