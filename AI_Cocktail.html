@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KI Cocktail Geschmacksanalysator</title>
+    <title>AI Cocktail Enhancer</title>
     <!-- Tailwind CSS CDN für Styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Benutzerdefiniertes Skript zur Definition der Schriftart Inter -->
@@ -66,16 +66,12 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
     <div class="container bg-white p-8 rounded-lg shadow-xl text-center flex flex-col items-center">
-        <h1 class="text-3xl md:text-4xl font-bold mb-6 text-gray-900">KI Cocktail Geschmacksanalysator</h1>
+        <h1 class="text-3xl md:text-4xl font-bold mb-3 text-gray-900">AI Cocktail Enhancer</h1>
         <p class="text-lg md:text-xl mb-8 text-gray-600">
-            Klicke auf den Button unten, damit unsere fortschrittliche KI dein Gesicht "analysiert" und ein Cocktail-Geschmacksprofil sowie eine passende Verbesserungsfarbe vorschlägt!
+            Kamera auswählen und Analyse starten.
         </p>
 
-        <!-- Kamera-Auswahl -->
-        <div class="w-full flex flex-col items-center mb-4">
-            <label for="cameraSelect" class="mb-2 font-medium text-gray-700">Kamera auswählen:</label>
-            <select id="cameraSelect" class="w-64 p-2 border rounded-lg text-gray-800 bg-gray-100"></select>
-        </div>
+
         <!-- Kamera-Vorschau mit Ellipsen-Crop -->
         <div id="cameraContainer" class="flex justify-center items-center mb-6">
             <video id="cameraPreview" autoplay playsinline muted
@@ -84,40 +80,44 @@
         </div>
 
         <button id="analyzeButton"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
-            "Foto machen" & Gesicht analysieren
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 mb-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+            Analyse starten
         </button>
+                <!-- Kamera-Auswahl -->
+        <div class="w-full flex flex-col items-center mb-4">
+            <select id="cameraSelect" class="w-64 p-2 border rounded-lg text-gray-800 bg-gray-100"></select>
+        </div>
 
         <!-- Lade-Nachricht -->
         <div id="loadingMessage" class="mt-8 text-xl font-medium text-blue-700">
-            Bitte warten Sie, während unsere KI Ihre einzigartigen Gesichtsdaten verarbeitet...
-            <br>
-            <br>
             <span>Analysiere</span><span class="dots"></span><br>
             <div id="loadingExplanations" class="mt-4 text-base text-blue-800"></div>
+            <br>
+            <br>
+            Bitte warten Sie, während unsere AI Ihre Gesichtsdaten verarbeitet...
         </div>
 
         <!-- Ergebnisse Container -->
-        <div id="resultsContainer" class="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg w-full">
+        <div id="resultsContainer" class="mt-1 p-2 bg-blue-50 border border-blue-200 rounded-lg w-full">
             <h2 class="text-2xl font-bold text-blue-800 mb-4">Analyse abgeschlossen!</h2>
-
+            <div class="flex flex-col items-center mt-6">
+                <p class="text-lg font-semibold text-blue-700 mb-2">Empfohlene Cocktailfarbe:</p>
+                <div id="colorSwatch" class="color-swatch rounded-full border-4 border-gray-300 shadow-lg mb-3"></div>
+                <p id="colorName" class="text-xl font-bold text-gray-800"></p>
+            </div>
             <p class="text-lg mb-4">
-                <span class="font-semibold text-blue-700">Gesichtsdaten-Interpretation:</span>
+                <span class="font-semibold text-blue-700">Gesichtsdaten:</span><br>
                 <span id="faceAnalysisText"></span>
             </p>
 
             <p class="text-lg mb-6">
-                <span class="font-semibold text-blue-700">Vorgeschlagenes Geschmacksprofil:</span>
+                <span class="font-semibold text-blue-700">Farbprofil:</span><br>
                 <span id="flavorProfileText"></span>
             </p>
 
-            <div class="flex flex-col items-center mt-6">
-                <p class="text-lg font-semibold text-blue-700 mb-2">Empfohlene Cocktail-Verbesserungsfarbe:</p>
-                <div id="colorSwatch" class="color-swatch rounded-full border-4 border-gray-300 shadow-lg mb-3"></div>
-                <p id="colorName" class="text-xl font-bold text-gray-800"></p>
-            </div>
+
             <button id="restartButton"
-                class="mt-8 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded-lg shadow transition duration-300 ease-in-out">
+                class="mt-2 mb-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded-lg shadow transition duration-300 ease-in-out">
                 Neustart
             </button>
         </div>
@@ -141,21 +141,21 @@
             const colorName = document.getElementById('colorName');
 
             // Vordefinierte Daten für die Fake-Analyse
-            const faceAnalyses = [
-                "Unsere KI erkannte komplexe Konturen und lebendige Farbtöne, die auf eine dynamische Persönlichkeit hindeuten.",
-                "Feine Ausdrücke und harmonische Proportionen wurden identifiziert, was auf einen anspruchsvollen Gaumen schließen lässt.",
-                "Markante Merkmale und eine einzigartige Symmetrie weisen auf einen mutigen und abenteuerlustigen Geist hin.",
-                "Ein sanftes Leuchten und eine raffinierte Struktur wurden bemerkt, was auf einen zarten, aber reichen Charakter hindeutet.",
-                "Faszinierende Schatten und helle Lichter deuten auf eine spielerische und energische Aura hin."
-            ];
+const faceAnalyses = [
+    ["dynamisch", "lebendig", "kreativ", "offen"],
+    ["harmonisch", "anspruchsvoll", "ausgeglichen"],
+    ["mutig", "abenteuerlustig", "einzigartig", "symmetrisch"],
+    ["zart", "raffiniert", "reich", "sanft"],
+    ["spielerisch", "energiegeladen", "faszinierend", "hell"]
+];
 
-            const flavorProfiles = [
-                "Süß und zitrusartig, mit einem Hauch von tropischen Noten.",
-                "Kräftig und würzig, mit erdigen Untertönen und einer anhaltenden Wärme.",
-                "Erdig und aromatisch, erinnernd an tiefe Wälder und alte Gewürze.",
-                "Leicht und erfrischend, mit knackigen Fruchtaromen und floralen Akzenten.",
-                "Reichhaltig und dekadent, mit Noten von dunklen Beeren und sanfter Vanille."
-            ];
+const flavorProfiles = [
+    ["süß", "zitrus", "tropisch"],
+    ["kräftig", "würzig", "erdig", "warm"],
+    ["erdig", "aromatisch", "waldig", "gewürze"],
+    ["leicht", "erfrischend", "fruchtig", "floral"],
+    ["reichhaltig", "dekadent", "beeren", "vanille"]
+];
 
             // Aktualisierte Cocktailfarben, die nur Rot, Grün, Blau, Gelb und Violett enthalten
             const cocktailColors = [
@@ -301,7 +301,12 @@
             }
 
             // Event-Listener für den Analyse-Button
-            analyzeButton.addEventListener('click', () => {
+analyzeButton.addEventListener('click', () => {
+                // analyzeButton, cameraSelect und den Hinweistext ausblenden
+                analyzeButton.style.display = 'none';
+                cameraSelect.style.display = 'none';
+                document.querySelector('p').style.display = 'none';
+
                 // Kamera-Vorschau ausblenden
                 cameraContainer.style.display = 'none';
 
@@ -330,7 +335,7 @@
                     loadingExplanations.textContent = explanations[explanationIndex];
                 }, 1500);
 
-                // KI-Analyse-Verzögerung simulieren (3-10 Sekunden)
+                // AI-Analyse-Verzögerung simulieren (3-10 Sekunden)
                 const delay = Math.floor(Math.random() * 7000) + 3000; // 3000-10000 ms
                 setTimeout(() => {
                     clearInterval(explanationInterval);
@@ -340,15 +345,15 @@
                     loadingMessage.style.display = 'none';
 
                     // Zufällige Analyseergebnisse abrufen
-                    const randomFaceAnalysis = getRandomItem(faceAnalyses);
-                    const randomFlavorProfile = getRandomItem(flavorProfiles);
-                    const randomColor = getRandomItem(cocktailColors);
+const randomFaceAnalysis = getRandomItem(faceAnalyses);
+const randomFlavorProfile = getRandomItem(flavorProfiles);
+const randomColor = getRandomItem(cocktailColors);
 
-    // DOM mit den Ergebnissen aktualisieren
-    faceAnalysisText.textContent = randomFaceAnalysis;
-    flavorProfileText.textContent = randomFlavorProfile;
-    colorSwatch.style.backgroundColor = randomColor.hex;
-    colorName.textContent = randomColor.name;
+// DOM mit den Ergebnissen aktualisieren
+faceAnalysisText.innerHTML = randomFaceAnalysis.map(tag => `<span class="inline-block bg-blue-200 text-blue-900 rounded-full px-3 py-1 text-sm font-semibold mr-2 mb-1">${tag}</span>`).join('');
+flavorProfileText.innerHTML = randomFlavorProfile.map(tag => `<span class="inline-block bg-yellow-200 text-yellow-900 rounded-full px-3 py-1 text-sm font-semibold mr-2 mb-1">${tag}</span>`).join('');
+colorSwatch.style.backgroundColor = randomColor.hex;
+colorName.textContent = randomColor.name;
 
     // Setze den Hintergrund auf die Cocktailfarbe
     document.body.style.backgroundColor = randomColor.hex;
